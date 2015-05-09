@@ -17,11 +17,14 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
+
+	"gopkg.in/yaml.v2"
 )
 
 func orExit(err error) {
@@ -34,7 +37,7 @@ func orExit(err error) {
 func main() {
 	obj := map[string]interface{}{}
 	for _, arg := range os.Args[1:] {
-		processArg(arg, obj)
+		processArg(arg, &obj)
 	}
 
 	data, err := ioutil.ReadAll(os.Stdin)
@@ -59,13 +62,22 @@ func processArg(arg string, obj interface{}) {
 		return
 	}
 	if strings.HasSuffix(strings.ToLower(arg), ".json") {
-		panic("not implemented")
+		fin, err := os.Open(arg)
+		orExit(err)
+		orExit(json.NewDecoder(fin).Decode(obj))
+		return
 	}
 	if strings.HasSuffix(strings.ToLower(arg), ".yaml") {
-		panic("not implemented")
+		fin, err := os.Open(arg)
+		orExit(err)
+		data, err := ioutil.ReadAll(fin)
+		orExit(err)
+		orExit(yaml.Unmarshal(data, obj))
+		return
 	}
 	if strings.HasSuffix(strings.ToLower(arg), ".rjson") {
-		panic("not implemented")
+		fmt.Fprintln(os.Stderr, ".rjson support is not implemnented")
+		os.Exit(1)
 	}
 	fmt.Fprintf(os.Stderr, "don't know what to do with %q\n", arg)
 	os.Exit(1)
