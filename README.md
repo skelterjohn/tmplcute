@@ -22,3 +22,21 @@ does not already exist, and then give it a 'bar' field with the value "baz". Or,
 "--arr[0]=123" will create an 'arr' field that is a slice, and set its first
 element to the string "123" if it does not already exist, or attempt to match
 its type if it does (types may already have been set by the other decoders).
+
+## Examples ##
+```
+$ echo '{{.foo}}' | tmplcute --foo=bar
+bar
+```
+```
+$ echo '{{range .foo}}{{.}}{{end}}' | tmplcute --foo[0]=abc --foo[1]=xyz
+abcxyz
+```
+```
+$ echo '{{.x.y}}' | tmplcute --x.y=z
+z
+```
+```
+$ echo '{{range .arr}}{{.x}},{{end}}' | tmplcute --arr[0].x=y --arr[1].x=z
+y,z,
+```
