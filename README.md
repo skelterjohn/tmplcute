@@ -24,19 +24,34 @@ element to the string "123" if it does not already exist, or attempt to match
 its type if it does (types may already have been set by the other decoders).
 
 ## Examples ##
+fields
 ```
 $ echo '{{.foo}}' | tmplcute --foo=bar
 bar
 ```
+slices
 ```
 $ echo '{{range .foo}}{{.}}{{end}}' | tmplcute --foo[0]=abc --foo[1]=xyz
 abcxyz
 ```
+nested fields
 ```
 $ echo '{{.x.y}}' | tmplcute --x.y=z
 z
 ```
+fields nested under arrays
 ```
 $ echo '{{range .arr}}{{.x}},{{end}}' | tmplcute --arr[0].x=y --arr[1].x=z
 y,z,
+```
+input from document files
+```
+$ cat examples/data.json 
+{"foo": "bar"}
+$ cat examples/data.yaml 
+foo: bar
+$ echo '{{.foo}}' | tmplcute examples/data.json
+bar
+$ echo '{{.foo}}' | tmplcute examples/data.yaml 
+bar
 ```
