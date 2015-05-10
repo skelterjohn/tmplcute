@@ -1,4 +1,4 @@
-# tmplcute #
+# tmplcute (template execute) #
 
 ## Simple CLI for exercising Go's text/template ##
 
