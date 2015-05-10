@@ -55,3 +55,13 @@ bar
 $ echo '{{.foo}}' | tmplcute examples/data.yaml 
 bar
 ```
+overriding values from previous args
+```
+$ cat > examples/twothings.yaml
+a: b
+c: d
+$ echo '{{.a}} {{.c}}' | tmplcute examples/twothings.yaml 
+b d
+$ echo '{{.a}} {{.c}}' | tmplcute examples/twothings.yaml --c=e
+b e
+```
