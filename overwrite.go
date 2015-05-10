@@ -115,7 +115,6 @@ func (k fieldKey) apply(obj reflect.Value, value string) error {
 	switch obj.Type().Kind() {
 	case reflect.Interface:
 		// apply to the contents of the interface.
-		// TODO(jasmuth): what if there is nothing in this interface?
 		return k.apply(obj.Elem(), value)
 	case reflect.Ptr:
 		// pointers need to be dereferenced and, if necessary, allocated
@@ -300,6 +299,16 @@ func (k indexKey) apply(obj reflect.Value, value string) error {
 	}
 
 	subObj := obj.Index(k.index)
+	if (subObj.Kind() == reflect.Map ||
+		subObj.Kind() == reflect.Slice ||
+		subObj.Kind() == reflect.Interface) && subObj.IsNil() {
+		switch k.subkey.(type) {
+		case indexKey:
+			subObj.Set(reflect.ValueOf([]interface{}{}))
+		case fieldKey:
+			subObj.Set(reflect.ValueOf(map[string]interface{}{}))
+		}
+	}
 	return k.subkey.apply(subObj, value)
 }
 

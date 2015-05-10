@@ -482,6 +482,38 @@ func TestApplyKey(t *testing.T) {
 				},
 			},
 		},
+		{
+			Keystr: "k1[0].k2",
+			Value:  "foo",
+			Obj: map[string]interface{}{
+				"k1": nil,
+			},
+			Expected: map[string]interface{}{
+				"obj": map[string]interface{}{
+					"k1": []interface{}{
+						map[string]interface{}{
+							"k2": "foo",
+						},
+					},
+				},
+			},
+		},
+		{
+			Keystr: "k1[0].k2",
+			Value:  "foo",
+			Obj: map[string]interface{}{
+				"k1": []interface{}{},
+			},
+			Expected: map[string]interface{}{
+				"obj": map[string]interface{}{
+					"k1": []interface{}{
+						map[string]interface{}{
+							"k2": "foo",
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, c := range cases {
 		foo := func() map[string]interface{} {
