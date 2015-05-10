@@ -19,6 +19,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	htemplate "html/template"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -35,10 +36,13 @@ func orExit(err error) {
 }
 
 var usage = `tmplcute - exercise go's text/template
-Usage: tmplcute [-h] [ --KEY=VALUE | FILE.json | FILE.yaml ]*
+Usage: tmplcute [-h] [-w] [ --KEY=VALUE | FILE.json | FILE.yaml ]*
 
 tmplcute reads a text/template from stdin, and executes it onto stdout using
 the object build by arguments.
+
+The "-w" flag indicates that "html/template" should be used rather than the
+normal "text/template".
 
 KEY/VALUE pairs and FILEs are used to build up the object used for the
 template's execution. The object begins life as a map[string]interface{}, and
@@ -55,25 +59,40 @@ its type if it does (types may already have been set by the other decoders).
 `
 
 func main() {
-	obj := map[string]interface{}{}
+	useHtml := false
+	args := []string{}
 	for _, arg := range os.Args[1:] {
+		switch arg {
+		case "-h":
+			fmt.Fprintln(os.Stderr, usage)
+			os.Exit(2)
+		case "-w":
+			useHtml = true
+		default:
+			args = append(args, arg)
+		}
+	}
+
+	obj := map[string]interface{}{}
+	for _, arg := range args {
 		processArg(arg, &obj)
 	}
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	orExit(err)
 
-	tmpl, err := template.New("tmplcute").Parse(string(data))
-	orExit(err)
-
-	orExit(tmpl.Execute(os.Stdout, obj))
+	if useHtml {
+		tmpl, err := htemplate.New("tmplcute").Parse(string(data))
+		orExit(err)
+		orExit(tmpl.Execute(os.Stdout, obj))
+	} else {
+		tmpl, err := template.New("tmplcute").Parse(string(data))
+		orExit(err)
+		orExit(tmpl.Execute(os.Stdout, obj))
+	}
 }
 
 func processArg(arg string, obj interface{}) {
-	if arg == "-h" {
-		fmt.Fprintln(os.Stderr, usage)
-		os.Exit(2)
-	}
 	if strings.HasPrefix(arg, "--") {
 		keyval := arg[2:]
 		tokens := strings.SplitN(keyval, "=", 2)

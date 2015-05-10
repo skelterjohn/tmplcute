@@ -4,11 +4,13 @@
 
 tmplcute - exercise go's text/template
 ```
-Usage: tmplcute [-h] [ --KEY=VALUE | FILE.json | FILE.yaml ]*
+Usage: tmplcute [-h] [-w] [ --KEY=VALUE | FILE.json | FILE.yaml ]*
 ```
-
 tmplcute reads a text/template from stdin, and executes it onto stdout using
 the object build by arguments.
+
+The "-w" flag indicates that "html/template" should be used rather than the
+normal "text/template".
 
 KEY/VALUE pairs and FILEs are used to build up the object used for the
 template's execution. The object begins life as a map[string]interface{}, and
@@ -64,4 +66,9 @@ $ echo '{{.a}} {{.c}}' | tmplcute examples/twothings.yaml
 b d
 $ echo '{{.a}} {{.c}}' | tmplcute examples/twothings.yaml --c=e
 b e
+```
+avoid script injections
+```
+$ echo 'welcome {{.name}}!' | tmplcute -w --name='<script>do js nonsense</script>'
+welcome &lt;script&gt;do js nonsense&lt;/script&gt;!
 ```
