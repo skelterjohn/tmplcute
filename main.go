@@ -119,7 +119,7 @@ func processArg(arg string, obj interface{}) {
 		return
 	}
 	if strings.HasSuffix(strings.ToLower(arg), ".rjson") {
-		fmt.Fprintln(os.Stderr, ".rjson support is not implemnented")
+		fmt.Fprintln(os.Stderr, ".rjson support is not implemented")
 		os.Exit(1)
 	}
 	fmt.Fprintf(os.Stderr, "don't know what to do with %q\n", arg)
