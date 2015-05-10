@@ -25,6 +25,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/skelterjohn/overwrite"
 	"gopkg.in/yaml.v2"
 )
 
@@ -101,7 +102,7 @@ func processArg(arg string, obj interface{}) {
 			os.Exit(1)
 		}
 		key, val := tokens[0], tokens[1]
-		orExit(Overwrite(obj, key, val))
+		orExit(overwrite.Overwrite(obj, key, val))
 		return
 	}
 	if strings.HasSuffix(strings.ToLower(arg), ".json") {
