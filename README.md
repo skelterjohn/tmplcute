@@ -4,7 +4,7 @@
 
 tmplcute - exercise go's text/template
 ```
-Usage: tmplcute [-h] [-w] [ --KEY=VALUE | FILE.json | FILE.yaml ]*
+Usage: tmplcute [-h] [-w] [ --KEY=VALUE | FILE{.json,.rjson,.yaml} ]*
 ```
 tmplcute reads a text/template from stdin, and executes it onto stdout using
 the object build by arguments.
@@ -24,6 +24,8 @@ does not already exist, and then give it a 'bar' field with the value "baz". Or,
 "--arr[0]=123" will create an 'arr' field that is a slice, and set its first
 element to the string "123" if it does not already exist, or attempt to match
 its type if it does (types may already have been set by the other decoders).
+
+The templating also has embedded funcs for output in json, rjson, or yaml.
 
 ## Examples ##
 fields
@@ -71,4 +73,13 @@ avoid script injections
 ```
 $ echo 'welcome {{.name}}!' | tmplcute -w --name='<script>do js nonsense</script>'
 welcome &lt;script&gt;do js nonsense&lt;/script&gt;!
+```
+output rjson (can swap in json or yaml)
+```
+$ echo '{{rjson .}}' | tmplcute --x[0]=z
+{
+  x: [
+    "z"
+  ]
+}
 ```

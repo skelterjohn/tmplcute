@@ -39,7 +39,7 @@ func orExit(err error) {
 }
 
 var usage = `tmplcute - exercise go's text/template
-Usage: tmplcute [-h] [-w] [ --KEY=VALUE | FILE.json | FILE.yaml ]*
+Usage: tmplcute [-h] [-w] [ --KEY=VALUE | FILE{.json,.rjson,.yaml} ]*
 
 tmplcute reads a text/template from stdin, and executes it onto stdout using
 the object build by arguments.
@@ -154,7 +154,6 @@ func formatJson(obj interface{}) (string, error) {
 }
 
 func formatRjson(obj interface{}) (string, error) {
-
 	data, err := rjson.MarshalIndent(obj, "", "  ")
 	if err != nil {
 		return string(data), err
