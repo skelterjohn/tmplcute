@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	htemplate "html/template"
@@ -83,11 +84,19 @@ func main() {
 	orExit(err)
 
 	if useHtml {
-		tmpl, err := htemplate.New("tmplcute").Parse(string(data))
+		funcMap := htemplate.FuncMap{
+			"json": formatJson,
+			"yaml": formatYaml,
+		}
+		tmpl, err := htemplate.New("tmplcute").Funcs(funcMap).Parse(string(data))
 		orExit(err)
 		orExit(tmpl.Execute(os.Stdout, obj))
 	} else {
-		tmpl, err := template.New("tmplcute").Parse(string(data))
+		funcMap := template.FuncMap{
+			"json": formatJson,
+			"yaml": formatYaml,
+		}
+		tmpl, err := template.New("tmplcute").Funcs(funcMap).Parse(string(data))
 		orExit(err)
 		orExit(tmpl.Execute(os.Stdout, obj))
 	}
@@ -125,4 +134,21 @@ func processArg(arg string, obj interface{}) {
 	}
 	fmt.Fprintf(os.Stderr, "don't know what to do with %q\n", arg)
 	os.Exit(1)
+}
+
+func formatJson(obj interface{}) (string, error) {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(obj); err != nil {
+		return "", err
+	}
+	var buf2 bytes.Buffer
+	if err := json.Indent(&buf2, buf.Bytes(), "", "  "); err != nil {
+		return "", err
+	}
+	return buf2.String(), nil
+}
+
+func formatYaml(obj interface{}) (string, error) {
+	data, err := yaml.Marshal(obj)
+	return string(data), err
 }
