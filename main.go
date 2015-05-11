@@ -26,6 +26,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/rogpeppe/rjson"
 	"github.com/skelterjohn/overwrite"
 	"gopkg.in/yaml.v2"
 )
@@ -85,16 +86,18 @@ func main() {
 
 	if useHtml {
 		funcMap := htemplate.FuncMap{
-			"json": formatJson,
-			"yaml": formatYaml,
+			"json":  formatJson,
+			"rjson": formatRjson,
+			"yaml":  formatYaml,
 		}
 		tmpl, err := htemplate.New("tmplcute").Funcs(funcMap).Parse(string(data))
 		orExit(err)
 		orExit(tmpl.Execute(os.Stdout, obj))
 	} else {
 		funcMap := template.FuncMap{
-			"json": formatJson,
-			"yaml": formatYaml,
+			"json":  formatJson,
+			"rjson": formatRjson,
+			"yaml":  formatYaml,
 		}
 		tmpl, err := template.New("tmplcute").Funcs(funcMap).Parse(string(data))
 		orExit(err)
@@ -129,8 +132,10 @@ func processArg(arg string, obj interface{}) {
 		return
 	}
 	if strings.HasSuffix(strings.ToLower(arg), ".rjson") {
-		fmt.Fprintln(os.Stderr, ".rjson support is not implemented")
-		os.Exit(1)
+		fin, err := os.Open(arg)
+		orExit(err)
+		orExit(rjson.NewDecoder(fin).Decode(obj))
+		return
 	}
 	fmt.Fprintf(os.Stderr, "don't know what to do with %q\n", arg)
 	os.Exit(1)
@@ -146,6 +151,15 @@ func formatJson(obj interface{}) (string, error) {
 		return "", err
 	}
 	return buf2.String(), nil
+}
+
+func formatRjson(obj interface{}) (string, error) {
+
+	data, err := rjson.MarshalIndent(obj, "", "  ")
+	if err != nil {
+		return string(data), err
+	}
+	return string(data), err
 }
 
 func formatYaml(obj interface{}) (string, error) {
