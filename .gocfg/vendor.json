@@ -1,0 +1,21 @@
+{
+  "GitRepos": {
+    "src/github.com/skelterjohn/tmplcute": {
+      "URI": "git@github.com:skelterjohn/tmplcute.git",
+      "Ref": "86b78a55d157095fa186f215744c090bde4d6f30"
+    },
+    "vendor/src/github.com/rogpeppe/rjson": {
+      "URI": "https://github.com/rogpeppe/rjson",
+      "Ref": "6637e5c2627a5f098523b71a450a8fb72e6e3261"
+    },
+    "vendor/src/github.com/skelterjohn/overwrite": {
+      "URI": "git@github.com:skelterjohn/overwrite.git",
+      "Ref": "c578bf17a217143b05914dc47f941cc078b55c7a"
+    },
+    "vendor/src/gopkg.in/yaml.v2": {
+      "URI": "https://gopkg.in/yaml.v2",
+      "Ref": "5d6f7e02b7cdad63b06ab3877915532cd30073b4"
+    }
+  },
+  "MercurialRepos": {}
+}
